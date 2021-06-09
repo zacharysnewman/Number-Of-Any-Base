@@ -6,10 +6,11 @@ namespace NumberOfAnyBase
 {
     public class Functions
     {
-        public static bool IsValidBaseAndNumber(string numberStr, out int baseValue, out string valueStr)
+        public static bool IsValidBaseAndNumber(string numberStr, out int baseValue, out bool isPositive, out string valueStr)
         {
             var baseAndNumber = numberStr.Split(Number.DELIMITER);
             baseValue = -1;
+            isPositive = false;
             valueStr = null;
 
             if (baseAndNumber.Length == 2)

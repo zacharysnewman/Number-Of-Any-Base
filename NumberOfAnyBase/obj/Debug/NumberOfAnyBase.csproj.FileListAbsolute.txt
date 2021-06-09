@@ -1,6 +1,0 @@
-/Users/zacknewman/Projects/NumberOfAnyBase/NumberOfAnyBase/bin/Debug/BaseAgnosticNumbers.exe
-/Users/zacknewman/Projects/NumberOfAnyBase/NumberOfAnyBase/bin/Debug/BaseAgnosticNumbers.pdb
-/Users/zacknewman/Projects/NumberOfAnyBase/NumberOfAnyBase/obj/Debug/NumberOfAnyBase.csprojAssemblyReference.cache
-/Users/zacknewman/Projects/NumberOfAnyBase/NumberOfAnyBase/obj/Debug/NumberOfAnyBase.csproj.CoreCompileInputs.cache
-/Users/zacknewman/Projects/NumberOfAnyBase/NumberOfAnyBase/obj/Debug/BaseAgnosticNumbers.exe
-/Users/zacknewman/Projects/NumberOfAnyBase/NumberOfAnyBase/obj/Debug/BaseAgnosticNumbers.pdb

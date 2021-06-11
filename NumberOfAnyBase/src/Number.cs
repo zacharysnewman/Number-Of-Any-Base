@@ -12,29 +12,29 @@ namespace NumberOfAnyBase
         public const char DELIMITER = '|';
 
         public int baseValue { get; private set; }
-        public bool isPositive { get; private set; }
+        public bool isNegative { get; private set; }
         public List<int> digits { get; private set; }
 
         public Number(int baseValue)
         {
             this.baseValue = baseValue;
-            this.isPositive = true;
+            this.isNegative = true;
             this.digits = new List<int>() { 0 };
         }
 
         private Number(int baseValue, bool isPositive, List<int> digits)
         {
             this.baseValue = baseValue;
-            this.isPositive = isPositive;
+            this.isNegative = isPositive;
             this.digits = new List<int>(digits);
         }
 
         public Number(string number)
         {
-            if (IsValidBaseAndNumber(number, out int baseValue, out bool isPositive, out string valueStr))
+            if (IsValidBaseAndNumber(number, out int baseValue, out bool isNegative, out string valueStr))
             {
                 this.baseValue = baseValue;
-                this.isPositive = isPositive;
+                this.isNegative = isNegative;
                 this.digits = valueStr.Select((s) => Number.ALL_NUMBER_VALUES.IndexOf(s.ToString())).Reverse().ToList();
             }
             else
@@ -74,7 +74,7 @@ namespace NumberOfAnyBase
                 sumDigits.Add(1);
             }
 
-            var sum = new Number(this.baseValue, ClearTrailingZeros(sumDigits));
+            var sum = new Number(this.baseValue, true, ClearTrailingZeros(sumDigits)); // explicit true, WRONG
             return sum;
         }
 
@@ -97,14 +97,138 @@ namespace NumberOfAnyBase
         {
 
         }*/
+        public override string ToString() => ToString(true);
+        public string ToString(bool includeBase)
+        {
+            var prefix = includeBase ? $"{this.baseValue}{Number.DELIMITER}" : "";
+            return $"{prefix}{(this.isNegative ? "-" : "")}{string.Join("", this.digits.ToArray().Reverse().Select((i) => Number.ALL_NUMBER_VALUES[i]))}";
+        }
 
-        public override string ToString() => $"{this.baseValue}{Number.DELIMITER}{string.Join("", this.digits.ToArray().Reverse().Select((i) => Number.ALL_NUMBER_VALUES[i]))}";
-
+        // Compare greater than, less than, equal to, not equal to using symbols (>,<,>=,<=,==,!=)
         public static bool operator ==(Number num1, Number num2) => num1.ToString() == num2.ToString();
         public static bool operator !=(Number num1, Number num2) => !(num1 == num2);
         public bool Equals(Number num) => this == num;
         public override bool Equals(object obj) => Equals(obj as Nullable<Number>);
         public override int GetHashCode() => this.ToString().GetHashCode();
+
+        private static bool GreaterThan(Number num1, Number num2, bool arePositive)
+        {
+            var subtractionResult = num1.digits.Zip(num2.digits, (one, two) => one - two).ToList();
+            for (int i = 0; i < subtractionResult.Count; i++)
+            {
+                if (subtractionResult[i] > 0)
+                {
+                    return arePositive;
+                }
+                else if (subtractionResult[i] < 0)
+                {
+                    return !arePositive;
+                }
+            }
+            return false;
+        }
+
+        private static bool LessThan(Number num1, Number num2, bool arePositive)
+        {
+            var subtractionResult = num1.digits.Zip(num2.digits, (one, two) => one - two).ToList();
+            for (int i = 0; i < subtractionResult.Count; i++)
+            {
+                if (subtractionResult[i] > 0)
+                {
+                    return !arePositive;
+                }
+                else if (subtractionResult[i] < 0)
+                {
+                    return arePositive;
+                }
+            }
+            return false;
+        }
+
+        public static bool operator >(Number num1, Number num2)
+        {
+            if (!num1.isNegative && num2.isNegative)
+            {
+                return true;
+            }
+            else if (num1.isNegative && !num2.isNegative)
+            {
+                return false;
+            }
+            else if (num1.isNegative && num2.isNegative) // both -
+            {
+                if (num1.digits.Count < num2.digits.Count)
+                {
+                    return true;
+                }
+                else if (num1.digits.Count > num2.digits.Count)
+                {
+                    return false;
+                }
+                else // if (num1.digits.Count == num2.digits.Count)
+                {
+                    return GreaterThan(num1, num2, arePositive: false);
+                }
+            }
+            else // if (!num1.isNegative && !num2.isNegative) // both +
+            {
+                if (num1.digits.Count < num2.digits.Count)
+                {
+                    return false;
+                }
+                else if (num1.digits.Count > num2.digits.Count)
+                {
+                    return true;
+                }
+                else // if (num1.digits.Count == num2.digits.Count)
+                {
+                    return GreaterThan(num1, num2, arePositive: true);
+                }
+            }
+        }
+        public static bool operator <(Number num1, Number num2)
+        {
+            if (!num1.isNegative && num2.isNegative)
+            {
+                return false;
+            }
+            else if (num1.isNegative && !num2.isNegative)
+            {
+                return true;
+            }
+            else if (num1.isNegative && num2.isNegative) // both -
+            {
+                if (num1.digits.Count < num2.digits.Count)
+                {
+                    return false;
+                }
+                else if (num1.digits.Count > num2.digits.Count)
+                {
+                    return true;
+                }
+                else // if (num1.digits.Count == num2.digits.Count)
+                {
+                    return LessThan(num1, num2, arePositive: false);
+                }
+            }
+            else // if (!num1.isNegative && !num2.isNegative) // both +
+            {
+                if (num1.digits.Count < num2.digits.Count)
+                {
+                    return true;
+                }
+                else if (num1.digits.Count > num2.digits.Count)
+                {
+                    return false;
+                }
+                else // if (num1.digits.Count == num2.digits.Count)
+                {
+                    return LessThan(num1, num2, arePositive: true);
+                }
+            }
+        }
+        public static bool operator >=(Number num1, Number num2) => num1 > num2 || num1 == num2;
+        public static bool operator <=(Number num1, Number num2) => num1 < num2 || num1 == num2;
 
         //private int MinDigit { get => 0; }
         //private int MaxDigit { get => this.Base - 1; }

@@ -6,17 +6,27 @@ namespace NumberOfAnyBase
 {
     public class Functions
     {
-        public static bool IsValidBaseAndNumber(string numberStr, out int baseValue, out bool isPositive, out string valueStr)
+        /// <summary>
+        /// Accepts any string in the format <base>:<number> (i.e. 10:789 or 10:-789)
+        /// </summary>
+        /// <param name="numberStr"></param>
+        /// <param name="baseValue"></param>
+        /// <param name="isNegative"></param>
+        /// <param name="valueStr"></param>
+        /// <returns></returns>
+        public static bool IsValidBaseAndNumber(string numberStr, out int baseValue, out bool isNegative, out string valueStr)
         {
             var baseAndNumber = numberStr.Split(Number.DELIMITER);
             baseValue = -1;
-            isPositive = false;
+            isNegative = false;
             valueStr = null;
 
             if (baseAndNumber.Length == 2)
             {
                 var baseStr = baseAndNumber[0];
                 valueStr = baseAndNumber[1];
+                isNegative = valueStr.Contains("-");
+                valueStr = valueStr.Replace("-", "");
                 if (IsValidBaseValueString(baseStr))
                 {
                     baseValue = int.Parse(baseStr);

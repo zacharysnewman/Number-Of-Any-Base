@@ -1,4 +1,7 @@
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using NumberOfAnyBase;
 
 namespace NumberOfAnyBase_Tests
 {
@@ -12,6 +15,7 @@ namespace NumberOfAnyBase_Tests
         [Test]
         public void Test1()
         {
+
             Assert.Pass();
         }
     }

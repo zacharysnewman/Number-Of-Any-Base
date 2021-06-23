@@ -1,8 +1,19 @@
 ﻿// Scope
-// ( ) Accept any base in string format (i.e. 10:999, 10:-999)
-// ( ) Add, Subtract, Divide, Multiply, Mod using actual symbols (+,-,/,*,%)
+// (√) Accept any base in string format (i.e. 10|999, 10|-999)
+// ( ) Neg, Add, Subtract, Divide, Multiply, Mod using actual symbols (+,-,/,*,%)
+//      (√) Neg
+//      (-) Add (Support negative numbers)
+//      ( ) Subtract
+//      ( ) Divide
+//      ( ) Multiply
+//      ( ) Mod
 // (√) Compare greater than, less than, equal to, not equal to using symbols (>,<,>=,<=,==,!=)
+// (√) Implicitly convert from int to Number
 // ( ) Convert from any base to any base
+//      (√) Add code
+//      ( ) Integrate code
+// ( ) Capability to initialize a number with a base (default to base 10)
+// ( ) Assign a string literal without including the Base
 
 using System;
 using System.Collections;
@@ -10,10 +21,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+//using static NumberOfAnyBase.Operators;
 
 namespace NumberOfAnyBase
 {
-    class MainClass
+    class Program
     {
         static Action<dynamic> Log = Console.WriteLine;
 
@@ -21,8 +33,8 @@ namespace NumberOfAnyBase
         {
             // Commutative: a+b=b+a
             Log("-- Commutative --");
-            var a = new Number("10|21");
-            var b = new Number("10|1001");
+            Number a = "10|21";
+            Number b = "10|1001";
             Log($"a: {a}, b: {b}");
             Log($"{a} + {b} = {a.Add(b)}");
             Log($"{b} + {a} = {b.Add(a)}");
@@ -30,21 +42,25 @@ namespace NumberOfAnyBase
 
             // Associative: a+(b+c)=(a+b)+c
             Log("\n-- Associative --");
-            a = new Number("40|kl");
-            b = new Number("40|hh");
-            var c = new Number("40|1DiA");
+            a = "40|KL";
+            b = "40|HH";
+            Number c = "40|1dIA";
             Log($"a: {a}, b: {b}, c: {c}");
 
             Log($"{a} + ({b} + {c}) = {a.Add(b.Add(c))}");
             Log($"({a} + {b}) + {c} = {c.Add(a.Add(b))}");
             Log($"a + (b + c) = (a + b) + c: {a.Add(b.Add(c)) == c.Add(a.Add(b))}");
 
-            GreaterThanTest();
-            GreaterThanOrEqualToTest();
-            LessThanTest();
-            LessThanOrEqualToTest();
-            EqualToTest();
-            NotEqualToTest();
+            // Operations
+            var op1 = new Operation(Operator.Subtract, "10|-100", "10|-99");
+
+            // -- Tests -- //
+            //GreaterThanTest();
+            //GreaterThanOrEqualToTest();
+            //LessThanTest();
+            //LessThanOrEqualToTest();
+            //EqualToTest();
+            //NotEqualToTest();
         }
 
         static void GreaterThanTest()

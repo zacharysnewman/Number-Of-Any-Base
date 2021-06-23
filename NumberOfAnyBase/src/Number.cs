@@ -8,24 +8,17 @@ namespace NumberOfAnyBase
     // Converting between different number bases and doing math with different bases (up to Base-62 before running out of characters) - Zack Newman
     public partial struct Number : IEquatable<Number>
     {
-        public const string ALL_NUMBER_VALUES = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        public const string ALL_NUMBER_VALUES = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         public const char DELIMITER = '|';
 
         public int baseValue { get; private set; }
         public bool isNegative { get; private set; }
         public List<int> digits { get; private set; }
 
-        public Number(int baseValue)
+        public Number(int baseValue, bool isNegative, List<int> digits)
         {
             this.baseValue = baseValue;
-            this.isNegative = true;
-            this.digits = new List<int>() { 0 };
-        }
-
-        private Number(int baseValue, bool isPositive, List<int> digits)
-        {
-            this.baseValue = baseValue;
-            this.isNegative = isPositive;
+            this.isNegative = isNegative;
             this.digits = new List<int>(digits);
         }
 
@@ -43,36 +36,44 @@ namespace NumberOfAnyBase
             }
         }
 
+        public Number Neg() => new Number(this.baseValue, !this.isNegative, this.digits);
+
         public Number Add(Number other)
         {
-            List<int> sumDigits = new List<int>();
-            bool doCarry = false;
-            int result = -1;
-
-            for (int i = 0; i < this.digits.Count || i < other.digits.Count; i++)
+            if (this.baseValue != other.baseValue)
             {
-                var carry = doCarry ? 1 : 0;
-                if (i < this.digits.Count && i < other.digits.Count)
-                {
-                    result = this.digits[i] + other.digits[i] + carry;
-                }
-                else if (i >= this.digits.Count)
-                {
-                    result = other.digits[i] + carry;
-                }
-                else if (i >= other.digits.Count)
-                {
-                    result = this.digits[i] + carry;
-                }
-
-                doCarry = result >= this.baseValue;
-                sumDigits.Add(result % this.baseValue);
+                throw new Exception($"Bases don't match exception. This base: {this.baseValue}, Other base: {other.baseValue}");
             }
 
-            if (doCarry == true)
-            {
-                sumDigits.Add(1);
-            }
+            bool resultIsNegative = false;
+
+            // If both positive
+
+            // else If both negative
+
+            // else if only one is negative
+            //      If first is negative
+            //          Swap
+            //      If second is negative
+            //          Subtract
+
+            var sumDigits = AddListsOfDigits(this.digits, other.digits, this.baseValue);
+
+            //List<int> sumDigits = new List<int>();
+            //bool doCarry = false;
+
+            //for (int i = 0; i < this.digits.Count || i < other.digits.Count; i++)
+            //{
+            //    var result = AddDigits(i, this.digits, other.digits, doCarry);
+
+            //    doCarry = result >= this.baseValue;
+            //    sumDigits.Add(result % this.baseValue);
+            //}
+
+            //if (doCarry == true)
+            //{
+            //    sumDigits.Add(1);
+            //}
 
             var sum = new Number(this.baseValue, true, ClearTrailingZeros(sumDigits)); // explicit true, WRONG
             return sum;
@@ -97,6 +98,10 @@ namespace NumberOfAnyBase
         {
 
         }*/
+        public static implicit operator Number(string s) => new Number(s);
+        public static explicit operator string(Number n) => n.ToString();
+        public static implicit operator Number(int i) => new Number($"10{Number.DELIMITER}{i}");
+
         public override string ToString() => ToString(true);
         public string ToString(bool includeBase)
         {
@@ -229,6 +234,13 @@ namespace NumberOfAnyBase
         }
         public static bool operator >=(Number num1, Number num2) => num1 > num2 || num1 == num2;
         public static bool operator <=(Number num1, Number num2) => num1 < num2 || num1 == num2;
+
+        //private Number(int baseValue)
+        //{
+        //    this.baseValue = baseValue;
+        //    this.isNegative = true;
+        //    this.digits = new List<int>() { 0 };
+        //}
 
         //private int MinDigit { get => 0; }
         //private int MaxDigit { get => this.Base - 1; }

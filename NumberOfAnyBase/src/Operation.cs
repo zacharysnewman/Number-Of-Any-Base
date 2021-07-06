@@ -30,12 +30,12 @@ namespace NumberOfAnyBase
             {
                 case Operator.Add:
                     // -A + B = B - A
-                    if (this.A.isNegative && !this.B.isNegative)
+                    if (this.A.IsNegative && !this.B.IsNegative)
                     {
                         return new Operation(Operator.Subtract, this.B, Abs(this.A));
                     }
                     // A + -B = A - B
-                    else if (!this.A.isNegative && this.B.isNegative)
+                    else if (!this.A.IsNegative && this.B.IsNegative)
                     {
                         return new Operation(Operator.Subtract, this.A, Abs(this.B));
                     }
@@ -47,17 +47,17 @@ namespace NumberOfAnyBase
                     break;
                 case Operator.Subtract:
                     // -A - -B = B - A
-                    if (this.A.isNegative && this.B.isNegative)
+                    if (this.A.IsNegative && this.B.IsNegative)
                     {
                         return new Operation(Operator.Subtract, Abs(this.B), Abs(this.A));
                     }
                     // A - -B = A + B
-                    else if (!this.A.isNegative && this.B.isNegative)
+                    else if (!this.A.IsNegative && this.B.IsNegative)
                     {
                         return new Operation(Operator.Add, this.A, Abs(this.B));
                     }
                     // -A - B = -A + -B
-                    else if (this.A.isNegative && !this.B.isNegative)
+                    else if (this.A.IsNegative && !this.B.IsNegative)
                     {
                         return new Operation(Operator.Add, this.A, Neg(this.B));
                     }
@@ -82,11 +82,10 @@ namespace NumberOfAnyBase
             }
         }
 
-        public Number Solve()
-        {
-            Simplify();
-            return new Func<Number, Number, Number>[] { Add, Subtract, Multiply, Divide, Mod }[(int)this.Op](this.A, this.B);
-        }
+        private Number Solve() =>
+            new Func<Number, Number, Number>[] { Add, Subtract, Multiply, Divide, Mod }[(int)this.Op](this.A, this.B);
+
+        public Number SimplifyAndSolve() => Simplify().Solve();
 
         public override string ToString() => $"{{ {this.A} {"+-*/%"[(int)this.Op]} {this.B} }}";
     }

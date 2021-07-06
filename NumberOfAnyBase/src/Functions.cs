@@ -63,19 +63,6 @@ namespace NumberOfAnyBase
             return sumDigits;
         }
 
-        //private enum ListCounts
-        //{
-        //    BothMoreDigits,
-        //    ANoMoreDigits,
-        //    BNoMoreDigits
-        //}
-        //private static ListCounts GetListCounts(int i, int aDigitsCount, int bDigitsCount)
-        //{
-        //    return i < aDigitsCount && i < bDigitsCount ? ListCounts.BothMoreDigits :
-        //        i >= aDigitsCount ? ListCounts.ANoMoreDigits :
-        //        i >= bDigitsCount ? ListCounts.BNoMoreDigits :
-        //        throw new Exception("AddDigits Exception: Passed invalid index, neither have digits.");
-        //}
         public static int AddDigits(int i, List<int> aDigits, List<int> bDigits)
         {
             var result = 0;
@@ -117,7 +104,7 @@ namespace NumberOfAnyBase
             {
                 var result = SubtractDigits(i, aDigits, bDigits) + (doBorrow ? -1 : 0);
 
-                doBorrow = result >= baseValue;
+                doBorrow = result >= baseValue; // < 0?
                 sumDigits.Add(result % baseValue);
             }
 

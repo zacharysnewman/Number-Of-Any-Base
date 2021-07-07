@@ -25,222 +25,62 @@ namespace NumberOfAnyBase
 
         public Number(string number)
         {
-            if (IsValidBaseAndNumber(number, out int baseValue, out bool isNegative, out string valueStr))
-            {
-                this.BaseValue = baseValue;
-                this.IsNegative = isNegative;
-                this.Digits = valueStr.Select((s) => Number.ALL_NUMBER_VALUES.IndexOf(s.ToString())).Reverse().ToList();
-            }
-            else
-            {
-                throw new Exception($"Invalid string format. Not a valid Number: {number}");
-            }
+            this = Number.Parse(number);
         }
 
-        public Number Add(Number other)
+        public Number(int number)
         {
-            var a = this;
-            var b = other;
-
-            if (a.BaseValue != b.BaseValue)
-            {
-                throw new Exception($"Bases don't match. This base: {a.BaseValue}, Other base: {b.BaseValue}");
-            }
-
-            bool resultIsNegative = false;
-            Number sum;
-
-            if (a.IsPositive && b.IsPositive)
-            {
-                resultIsNegative = false;
-                // sum = Add(a, b);
-            }
-            else if (a.IsNegative && a.IsNegative)
-            {
-                resultIsNegative = true;
-                // sum = Add(a.Abs(), b.Abs());
-            }
-            else // if only one is negative
-            {
-                if (b.Abs() > a.Abs())
-                {
-                    Swap(ref a, ref b);
-                }
-                resultIsNegative = a.IsNegative;
-                // sum = Subtract(a.Abs(), b.Abs());
-            }
-            // return resultIsNegative ? sum.Neg() : sum;
-
-            var sumDigits = AddListsOfDigits(a.Digits, b.Digits, a.BaseValue);
-
-            sum = new Number(a.BaseValue, true, ClearTrailingZeros(sumDigits)); // explicit true, WRONG
-            return sum;
+            this = new Number($"10{Number.DELIMITER}{number}");
         }
 
-        public override string ToString() => ToString(includeBase: true);
+        public override string ToString() => ToString(includeBase: false);
         public string ToString(bool includeBase)
         {
             var prefix = includeBase ? $"{this.BaseValue}{Number.DELIMITER}" : "";
             return $"{prefix}{(this.IsNegative ? "-" : "")}{string.Join("", this.Digits.ToArray().Reverse().Select((i) => Number.ALL_NUMBER_VALUES[i]))}";
         }
 
-        public Number Abs() => this.IsNegative ? new Number(this.BaseValue, isNegative: false, this.Digits) : this;
-
-        public static Number operator +(Number a, Number b) => new Operation(Operator.Add, a, b).SimplifyAndSolve();
-        public static Number operator -(Number a, Number b) => new Operation(Operator.Subtract, a, b).SimplifyAndSolve();
-        public static Number operator *(Number a, Number b) => new Operation(Operator.Multiply, a, b).SimplifyAndSolve();
-        public static Number operator /(Number a, Number b) => new Operation(Operator.Divide, a, b).SimplifyAndSolve();
-        public static Number operator %(Number a, Number b) => new Operation(Operator.Mod, a, b).SimplifyAndSolve();
-
-        public static implicit operator Number(string s) => new Number(s);
-        public static explicit operator string(Number n) => n.ToString();
-        public static implicit operator Number(int i) => new Number($"10{Number.DELIMITER}{i}");
-
-
-        // Compare greater than, less than, equal to, not equal to using symbols (>,<,>=,<=,==,!=)
-        public static bool operator ==(Number num1, Number num2) => num1.ToString() == num2.ToString();
-        public static bool operator !=(Number num1, Number num2) => !(num1 == num2);
-        public bool Equals(Number num) => this == num;
-        public override bool Equals(object obj) => Equals(obj as Nullable<Number>);
-        public override int GetHashCode() => this.ToString().GetHashCode();
-
-        private static bool GreaterThan(Number num1, Number num2, bool arePositive)
+        public static Number Parse(string numberStr)
         {
-            var subtractionResult = num1.Digits.Zip(num2.Digits, (one, two) => one - two).ToList();
-            for (int i = 0; i < subtractionResult.Count; i++)
+            if (!numberStr.Contains(Number.DELIMITER))
             {
-                if (subtractionResult[i] > 0)
+                throw new Exception($"Number string does not contain delimiter: '{Number.DELIMITER}', Input: \"{numberStr}\"");
+            }
+            var baseAndNumber = numberStr.Split(Number.DELIMITER);
+            int baseValue = -1;
+            bool isNegative = false;
+            string valueStr = null;
+
+            if (baseAndNumber.Length == 2)
+            {
+                var baseStr = baseAndNumber[0];
+                valueStr = baseAndNumber[1];
+                isNegative = valueStr.Contains("-");
+                valueStr = valueStr.Replace("-", "");
+                if (IsValidBaseValueString(baseStr))
                 {
-                    return arePositive;
+                    baseValue = int.Parse(baseStr);
+                    if (!IsValidValueString(valueStr, GetBaseValues(baseValue)))
+                    {
+                        throw new Exception($"Invalid Number. Not a valid value: {valueStr}, base: {baseValue}");
+                    }
                 }
-                else if (subtractionResult[i] < 0)
+                else
                 {
-                    return !arePositive;
+                    throw new Exception($"Invalid Number. Not a valid base: {baseStr}");
                 }
             }
-            return false;
+            else
+            {
+                throw new Exception($"Invalid string format. Not a valid Number string: {baseAndNumber}");
+            }
+
+            return new Number(baseValue, isNegative, valueStr.Select(ToDigits).Reverse().ToList());
         }
 
-        private static bool LessThan(Number num1, Number num2, bool arePositive)
-        {
-            var subtractionResult = num1.Digits.Zip(num2.Digits, (one, two) => one - two).ToList();
-            for (int i = 0; i < subtractionResult.Count; i++)
-            {
-                if (subtractionResult[i] > 0)
-                {
-                    return !arePositive;
-                }
-                else if (subtractionResult[i] < 0)
-                {
-                    return arePositive;
-                }
-            }
-            return false;
-        }
+        private static Func<char, int> ToDigits = (s) => Number.ALL_NUMBER_VALUES.IndexOf(s.ToString());
 
-        public static bool operator >(Number num1, Number num2)
-        {
-            if (!num1.IsNegative && num2.IsNegative)
-            {
-                return true;
-            }
-            else if (num1.IsNegative && !num2.IsNegative)
-            {
-                return false;
-            }
-            else if (num1.IsNegative && num2.IsNegative) // both -
-            {
-                if (num1.Digits.Count < num2.Digits.Count)
-                {
-                    return true;
-                }
-                else if (num1.Digits.Count > num2.Digits.Count)
-                {
-                    return false;
-                }
-                else // if (num1.digits.Count == num2.digits.Count)
-                {
-                    return GreaterThan(num1, num2, arePositive: false);
-                }
-            }
-            else // if (!num1.isNegative && !num2.isNegative) // both +
-            {
-                if (num1.Digits.Count < num2.Digits.Count)
-                {
-                    return false;
-                }
-                else if (num1.Digits.Count > num2.Digits.Count)
-                {
-                    return true;
-                }
-                else // if (num1.digits.Count == num2.digits.Count)
-                {
-                    return GreaterThan(num1, num2, arePositive: true);
-                }
-            }
-        }
-        public static bool operator <(Number num1, Number num2)
-        {
-            if (!num1.IsNegative && num2.IsNegative)
-            {
-                return false;
-            }
-            else if (num1.IsNegative && !num2.IsNegative)
-            {
-                return true;
-            }
-            else if (num1.IsNegative && num2.IsNegative) // both -
-            {
-                if (num1.Digits.Count < num2.Digits.Count)
-                {
-                    return false;
-                }
-                else if (num1.Digits.Count > num2.Digits.Count)
-                {
-                    return true;
-                }
-                else // if (num1.digits.Count == num2.digits.Count)
-                {
-                    return LessThan(num1, num2, arePositive: false);
-                }
-            }
-            else // if (!num1.isNegative && !num2.isNegative) // both +
-            {
-                if (num1.Digits.Count < num2.Digits.Count)
-                {
-                    return true;
-                }
-                else if (num1.Digits.Count > num2.Digits.Count)
-                {
-                    return false;
-                }
-                else // if (num1.digits.Count == num2.digits.Count)
-                {
-                    return LessThan(num1, num2, arePositive: true);
-                }
-            }
-        }
-        public static bool operator >=(Number num1, Number num2) => num1 > num2 || num1 == num2;
-        public static bool operator <=(Number num1, Number num2) => num1 < num2 || num1 == num2;
-
-        //private Number(int baseValue)
-        //{
-        //    this.baseValue = baseValue;
-        //    this.isNegative = true;
-        //    this.digits = new List<int>() { 0 };
-        //}
-
-        //private int MinDigit { get => 0; }
-        //private int MaxDigit { get => this.Base - 1; }
-
-        //public string Values
-        //{
-        //    get => GetValues(this.baseNumber);
-        //}
-
-        //private static string GetValues(int Base) => ALL_NUMBER_VALUES.Substring(0, Base);
-
-        /*
+        /* Example TypeScript implementation of math functions
             export const add = (a: number) => (b: number) => a + b;
             export const neg = (a: number) => (a === 0 ? 0 : -a);
 

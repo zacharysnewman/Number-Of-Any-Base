@@ -6,31 +6,56 @@ namespace NumberOfAnyBase
 {
     public class Functions
     {
-        public static bool IsValidBaseAndNumber(string numberStr, out int baseValue, out bool isNegative, out string valueStr)
-        {
-            var baseAndNumber = numberStr.Split(Number.DELIMITER);
-            baseValue = -1;
-            isNegative = false;
-            valueStr = null;
-
-            if (baseAndNumber.Length == 2)
-            {
-                var baseStr = baseAndNumber[0];
-                valueStr = baseAndNumber[1];
-                isNegative = valueStr.Contains("-");
-                valueStr = valueStr.Replace("-", "");
-                if (IsValidBaseValueString(baseStr))
-                {
-                    baseValue = int.Parse(baseStr);
-                    return IsValidValueString(valueStr, GetBaseValues(baseValue));
-                }
-            }
-            return false;
-        }
+        public static Number Abs(Number number) => new Number(number.BaseValue, isNegative: false, number.Digits);
 
         public static string GetBaseValues(int baseNumber) => Number.ALL_NUMBER_VALUES.Substring(0, baseNumber);
         public static bool IsValidBaseValueString(string baseStr) => baseStr.All((c) => "0123456789".Contains(c));
         public static bool IsValidValueString(string numberStr, string baseValues) => numberStr.All(c => baseValues.Contains(c));
+
+        public static Number DecimalToAnyBase(int i, int toBase)
+        {
+            var isNegative = i.ToString().Contains("-");
+            var sign = isNegative ? "-" : "";
+            i = Math.Abs(i);
+            IEnumerable<int> acc = new int[0];
+            while (i != 0)
+            {
+                i = FullDivide(i, toBase, out int remainder);
+                acc = acc.Prepend(remainder);
+            }
+            var charCol = acc.Select((x) => AllNumbersCharFromIndex(x));
+            charCol = charCol.Count() > 0 ? charCol : new List<char>() { '0' };
+            return new Number($"{toBase}{Number.DELIMITER}{sign}{string.Join("", charCol)}");
+        }
+
+        public static int AnyBaseToDecimal(Number number)
+        {
+            string numberStr = (string)Abs(number);
+            int len = numberStr.Length;
+            int power = 1; // power base 
+            int num = 0; // result 
+            int i;
+
+            for (i = len - 1; i >= 0; i--)
+            {
+                num += IndexFromAllNumbersChar(numberStr[i]) * power;
+                power = power * number.BaseValue;
+            }
+
+            return number.IsNegative ? num * -1 : num;
+        }
+
+        public static Number AnyBaseToAnyBase(Number number, int toBase) => DecimalToAnyBase(AnyBaseToDecimal(number), toBase);
+
+        private static int FullDivide(int a, int b, out int remainder)
+        {
+            remainder = a % b;
+            return a / b;
+        }
+
+        private static int IndexFromAllNumbersChar(char c) => Number.ALL_NUMBER_VALUES.IndexOf(c);
+        private static char AllNumbersCharFromIndex(int index) => Number.ALL_NUMBER_VALUES[index];
+
 
         public static List<int> ClearTrailingZeros(List<int> numberDigits)
         {
@@ -135,51 +160,5 @@ namespace NumberOfAnyBase
             b = a;
             a = tempB;
         }
-
-        // Conversions //
-        public static string DecimalToAny(int i, int toBase)
-        {
-            IEnumerable<int> acc = new int[0];
-            while (i != 0)
-            {
-                i = FullDivide(i, toBase, out int remainder);
-                acc = acc.Prepend(remainder);
-            }
-            var charCol = acc.Select((x) => CharFromIndex(x));
-            return string.Join("", charCol);
-        }
-
-        public static int AnyToDecimal(string str, int b_ase)
-        {
-            int len = str.Length;
-            int power = 1; // power base 
-            int num = 0; // result 
-            int i;
-
-            for (i = len - 1; i >= 0; i--)
-            {
-                if (IndexFromChar(str[i]) >= b_ase)
-                {
-                    Console.WriteLine("Invalid Number");
-                    return -1;
-                }
-
-                num += IndexFromChar(str[i]) * power;
-                power = power * b_ase;
-            }
-
-            return num;
-        }
-
-        public static string AnyToAny(string val, int fromBase, int toBase) => DecimalToAny(AnyToDecimal(val, fromBase), toBase);
-
-        private static int FullDivide(int a, int b, out int remainder)
-        {
-            remainder = a % b;
-            return a / b;
-        }
-
-        private static int IndexFromChar(char c) => Number.ALL_NUMBER_VALUES.IndexOf(c);
-        private static char CharFromIndex(int index) => Number.ALL_NUMBER_VALUES[index];
     }
 }

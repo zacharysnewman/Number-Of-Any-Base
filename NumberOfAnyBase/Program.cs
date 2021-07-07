@@ -1,20 +1,9 @@
 ﻿// Scope
 // (√) Accept any base in string format (i.e. 10|999, 10|-999)
-// ( ) Neg, Add, Subtract, Divide, Multiply, Mod using actual symbols (+,-,/,*,%)
-//      (√) Neg
-//      (-) Add (Support negative numbers)
-//      ( ) Subtract
-//      ( ) Divide
-//      ( ) Multiply
-//      ( ) Mod
+// (√) Neg, Add, Subtract, Divide, Multiply, Mod using actual symbols (+,-,/,*,%)
 // (√) Compare greater than, less than, equal to, not equal to using symbols (>,<,>=,<=,==,!=)
 // (√) Implicitly convert from int to Number
-// ( ) Convert from any base to any base
-//      (√) Add code
-//      ( ) Integrate code
-// ( ) Capability to initialize a number with a base (default to base 10)
-// ( ) Capability to change default base from 10 to any value (check within range of possible ALL_NUMBER_VALUES string length)
-// ( ) Assign a string literal without including the Base
+// (√) Convert from any base to any base
 
 using System;
 using System.Collections;
@@ -32,33 +21,37 @@ namespace NumberOfAnyBase
 
         public static void Main(string[] args)
         {
-            var a = 1;
-            var b = 2;
-            Console.WriteLine($"a: {a}, b: {b}");
-            Swap(ref a, ref b);
-            Console.WriteLine($"a: {a}, b: {b}");
+            Number a = "3|22";
+            Number b = "3|11";
+            Console.WriteLine("-- Example --");
+            Console.WriteLine($"Base: {a.BaseValue}");
+            Console.WriteLine($"{a} + {b} = {a + b}");
+            Console.WriteLine($"{a} - {b} = {a - b}");
+            Console.WriteLine($"{a} / {b} = {a / b}");
+            Console.WriteLine($"{a} * {b} = {a * b}");
+            Console.WriteLine($"{a} % {b} = {a % b}");
 
             // -- Tests -- //
-            //AdditionCommutativeTest();
-            //AdditionAssociativeTest();
-            //GreaterThanTest();
-            //GreaterThanOrEqualToTest();
-            //LessThanTest();
-            //LessThanOrEqualToTest();
-            //EqualToTest();
-            //NotEqualToTest();
+            AdditionCommutativeTest();
+            AdditionAssociativeTest();
+            GreaterThanTest();
+            GreaterThanOrEqualToTest();
+            LessThanTest();
+            LessThanOrEqualToTest();
+            EqualToTest();
+            NotEqualToTest();
         }
 
         static void AdditionCommutativeTest()
         {
             // Commutative: a+b=b+a
-            Log("-- Commutative --");
+            Log("\n-- Commutative --");
             Number a = "10|21";
             Number b = "10|1001";
             Log($"a: {a}, b: {b}");
-            Log($"{a} + {b} = {a.Add(b)}");
-            Log($"{b} + {a} = {b.Add(a)}");
-            Log($"a + b = b + a: {a.Add(b) == b.Add(a)}");
+            Log($"{a} + {b} = {a + b}");
+            Log($"{b} + {a} = {b + a}");
+            Log($"a + b = b + a: {a + b == b + a}");
         }
 
         static void AdditionAssociativeTest()
@@ -70,9 +63,9 @@ namespace NumberOfAnyBase
             Number c = "40|1dIA";
             Log($"a: {a}, b: {b}, c: {c}");
 
-            Log($"{a} + ({b} + {c}) = {a.Add(b.Add(c))}");
-            Log($"({a} + {b}) + {c} = {c.Add(a.Add(b))}");
-            Log($"a + (b + c) = (a + b) + c: {a.Add(b.Add(c)) == c.Add(a.Add(b))}");
+            Log($"{a} + ({b} + {c}) = {a + (b + c)}");
+            Log($"({a} + {b}) + {c} = {c + (a + b)}");
+            Log($"a + (b + c) = (a + b) + c: {a + (b + c) == c + (a + b)}");
         }
 
         static void GreaterThanTest()
@@ -85,7 +78,7 @@ namespace NumberOfAnyBase
             {
                 for (int y = 0; y < nums.Length; y++, i++)
                 {
-                    result.Add($"{nums[x].ToString(false)} > {nums[y].ToString(false)}: {nums[x] > nums[y]} {int.Parse(nums[x].ToString(false)) > int.Parse(nums[y].ToString(false))}");
+                    result.Add($"{nums[x].ToString(false)} > {nums[y].ToString(false)}: {nums[x] > nums[y] == int.Parse(nums[x].ToString(false)) > int.Parse(nums[y].ToString(false))}");
                 }
             }
             Log($"{string.Join("\n", result)}");
@@ -100,7 +93,7 @@ namespace NumberOfAnyBase
             {
                 for (int y = 0; y < nums.Length; y++, i++)
                 {
-                    result.Add($"{nums[x].ToString(false)} >= {nums[y].ToString(false)}: {nums[x] >= nums[y]} {int.Parse(nums[x].ToString(false)) >= int.Parse(nums[y].ToString(false))}");
+                    result.Add($"{nums[x]} >= {nums[y]}: {nums[x] >= nums[y] == int.Parse(nums[x].ToString(false)) >= int.Parse(nums[y].ToString(false))}");
                 }
             }
             Log($"{string.Join("\n", result)}");
@@ -116,7 +109,7 @@ namespace NumberOfAnyBase
             {
                 for (int y = 0; y < nums.Length; y++, i++)
                 {
-                    result.Add($"{nums[x].ToString(false)} < {nums[y].ToString(false)}: {nums[x] < nums[y]} {int.Parse(nums[x].ToString(false)) < int.Parse(nums[y].ToString(false))}");
+                    result.Add($"{nums[x]} < {nums[y]}: {nums[x] < nums[y] == int.Parse(nums[x].ToString(false)) < int.Parse(nums[y].ToString(false))}");
                 }
             }
             Log($"{string.Join("\n", result)}");
@@ -132,7 +125,7 @@ namespace NumberOfAnyBase
             {
                 for (int y = 0; y < nums.Length; y++, i++)
                 {
-                    result.Add($"{nums[x].ToString(false)} <= {nums[y].ToString(false)}: {nums[x] <= nums[y]} {int.Parse(nums[x].ToString(false)) <= int.Parse(nums[y].ToString(false))}");
+                    result.Add($"{nums[x]} <= {nums[y]}: {nums[x] <= nums[y] == int.Parse(nums[x].ToString(false)) <= int.Parse(nums[y].ToString(false))}");
                 }
             }
             Log($"{string.Join("\n", result)}");
@@ -148,7 +141,7 @@ namespace NumberOfAnyBase
             {
                 for (int y = 0; y < nums.Length; y++, i++)
                 {
-                    result.Add($"{nums[x].ToString(false)} == {nums[y].ToString(false)}: {nums[x] == nums[y]} {int.Parse(nums[x].ToString(false)) == int.Parse(nums[y].ToString(false))}");
+                    result.Add($"{nums[x]} == {nums[y]}: {(nums[x] == nums[y]) == (int.Parse(nums[x].ToString(false)) == int.Parse(nums[y].ToString(false)))}");
                 }
             }
             Log($"{string.Join("\n", result)}");
@@ -164,7 +157,7 @@ namespace NumberOfAnyBase
             {
                 for (int y = 0; y < nums.Length; y++, i++)
                 {
-                    result.Add($"{nums[x].ToString(false)} != {nums[y].ToString(false)}: {nums[x] != nums[y]} {int.Parse(nums[x].ToString(false)) != int.Parse(nums[y].ToString(false))}");
+                    result.Add($"{nums[x]} != {nums[y]}: {(nums[x] != nums[y]) == (int.Parse(nums[x].ToString(false)) != int.Parse(nums[y].ToString(false)))}");
                 }
             }
             Log($"{string.Join("\n", result)}");

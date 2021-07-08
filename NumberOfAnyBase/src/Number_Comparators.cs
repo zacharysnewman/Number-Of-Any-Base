@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace NumberOfAnyBase
 {
@@ -12,10 +13,14 @@ namespace NumberOfAnyBase
         public override int GetHashCode() => this.ToString(includeBase: true).GetHashCode();
         public static bool operator >=(Number num1, Number num2) => num1 > num2 || num1 == num2;
         public static bool operator <=(Number num1, Number num2) => num1 < num2 || num1 == num2;
+        public static bool operator >(Number num1, Number num2) =>
+            NegativeAndDigitsGreaterThan(num1.IsNegative, num2.IsNegative, num1.Digits, num2.Digits);
+        public static bool operator <(Number num1, Number num2) =>
+            NegativeAndDigitsLessThan(num1.IsNegative, num2.IsNegative, num1.Digits, num2.Digits);
 
-        private static bool GreaterThan(Number num1, Number num2, bool bothPositive)
+        private static bool DigitsGreaterThan(List<int> num1Digits, List<int> num2Digits, bool bothPositive)
         {
-            var subtractionResult = num1.Digits.Zip(num2.Digits, (one, two) => one - two).ToList();
+            var subtractionResult = num1Digits.Zip(num2Digits, (one, two) => one - two).ToList();
             for (int i = 0; i < subtractionResult.Count; i++)
             {
                 if (subtractionResult[i] > 0)
@@ -30,9 +35,9 @@ namespace NumberOfAnyBase
             return false;
         }
 
-        private static bool LessThan(Number num1, Number num2, bool bothPositive)
+        private static bool DigitsLessThan(List<int> num1Digits, List<int> num2Digits, bool bothPositive)
         {
-            var subtractionResult = num1.Digits.Zip(num2.Digits, (one, two) => one - two).ToList();
+            var subtractionResult = num1Digits.Zip(num2Digits, (one, two) => one - two).ToList();
             for (int i = 0; i < subtractionResult.Count; i++)
             {
                 if (subtractionResult[i] > 0)
@@ -47,85 +52,86 @@ namespace NumberOfAnyBase
             return false;
         }
 
-        public static bool operator >(Number num1, Number num2)
+        private static bool NegativeAndDigitsGreaterThan(bool num1IsNegative, bool num2IsNegative, List<int> num1Digits, List<int> num2Digits)
         {
-            if (!num1.IsNegative && num2.IsNegative)
+            if (!num1IsNegative && num2IsNegative)
             {
                 return true;
             }
-            else if (num1.IsNegative && !num2.IsNegative)
+            else if (num1IsNegative && !num2IsNegative)
             {
                 return false;
             }
-            else if (num1.IsNegative && num2.IsNegative) // both -
+            else if (num1IsNegative && num2IsNegative) // both -
             {
-                if (num1.Digits.Count < num2.Digits.Count)
+                if (num1Digits.Count < num2Digits.Count)
                 {
                     return true;
                 }
-                else if (num1.Digits.Count > num2.Digits.Count)
+                else if (num1Digits.Count > num2Digits.Count)
                 {
                     return false;
                 }
                 else // if (num1.digits.Count == num2.digits.Count)
                 {
-                    return GreaterThan(num1, num2, bothPositive: false);
+                    return DigitsGreaterThan(num1Digits, num2Digits, bothPositive: false);
                 }
             }
             else // if (!num1.isNegative && !num2.isNegative) // both +
             {
-                if (num1.Digits.Count < num2.Digits.Count)
+                if (num1Digits.Count < num2Digits.Count)
                 {
                     return false;
                 }
-                else if (num1.Digits.Count > num2.Digits.Count)
+                else if (num1Digits.Count > num2Digits.Count)
                 {
                     return true;
                 }
                 else // if (num1.digits.Count == num2.digits.Count)
                 {
-                    return GreaterThan(num1, num2, bothPositive: true);
+                    return DigitsGreaterThan(num1Digits, num2Digits, bothPositive: true);
                 }
             }
         }
-        public static bool operator <(Number num1, Number num2)
+
+        private static bool NegativeAndDigitsLessThan(bool num1IsNegative, bool num2IsNegative, List<int> num1Digits, List<int> num2Digits)
         {
-            if (!num1.IsNegative && num2.IsNegative)
+            if (!num1IsNegative && num2IsNegative)
             {
                 return false;
             }
-            else if (num1.IsNegative && !num2.IsNegative)
+            else if (num1IsNegative && !num2IsNegative)
             {
                 return true;
             }
-            else if (num1.IsNegative && num2.IsNegative) // both -
+            else if (num1IsNegative && num2IsNegative) // both -
             {
-                if (num1.Digits.Count < num2.Digits.Count)
+                if (num1Digits.Count < num2Digits.Count)
                 {
                     return false;
                 }
-                else if (num1.Digits.Count > num2.Digits.Count)
+                else if (num1Digits.Count > num2Digits.Count)
                 {
                     return true;
                 }
                 else // if (num1.digits.Count == num2.digits.Count)
                 {
-                    return LessThan(num1, num2, bothPositive: false);
+                    return DigitsLessThan(num1Digits, num2Digits, bothPositive: false);
                 }
             }
             else // if (!num1.isNegative && !num2.isNegative) // both +
             {
-                if (num1.Digits.Count < num2.Digits.Count)
+                if (num1Digits.Count < num2Digits.Count)
                 {
                     return true;
                 }
-                else if (num1.Digits.Count > num2.Digits.Count)
+                else if (num1Digits.Count > num2Digits.Count)
                 {
                     return false;
                 }
                 else // if (num1.digits.Count == num2.digits.Count)
                 {
-                    return LessThan(num1, num2, bothPositive: true);
+                    return DigitsLessThan(num1Digits, num2Digits, bothPositive: true);
                 }
             }
         }

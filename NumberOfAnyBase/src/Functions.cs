@@ -12,7 +12,7 @@ namespace NumberOfAnyBase
         public static bool IsValidBaseValueString(string baseStr) => baseStr.All((c) => "0123456789".Contains(c));
         public static bool IsValidValueString(string numberStr, string baseValues) => numberStr.All(c => baseValues.Contains(c));
 
-        public static Number DecimalToAnyBase(int i, int toBase)
+        public static Number IntToNumber(int i, int toBase)
         {
             var isNegative = i.ToString().Contains("-");
             var sign = isNegative ? "-" : "";
@@ -28,7 +28,7 @@ namespace NumberOfAnyBase
             return new Number($"{toBase}{Number.DELIMITER}{sign}{string.Join("", charCol)}");
         }
 
-        public static int AnyBaseToDecimal(Number number)
+        public static int NumberToInt(Number number)
         {
             string numberStr = (string)Abs(number);
             int len = numberStr.Length;
@@ -45,7 +45,7 @@ namespace NumberOfAnyBase
             return number.IsNegative ? num * -1 : num;
         }
 
-        public static Number AnyBaseToAnyBase(Number number, int toBase) => DecimalToAnyBase(AnyBaseToDecimal(number), toBase);
+        public static Number AnyBaseToAnyBase(Number number, int toBase) => IntToNumber(NumberToInt(number), toBase);
 
         private static int FullDivide(int a, int b, out int remainder)
         {

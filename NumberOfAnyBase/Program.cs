@@ -4,14 +4,12 @@
 // (√) Compare greater than, less than, equal to, not equal to using symbols (>,<,>=,<=,==,!=)
 // (√) Implicitly convert from int to Number
 // (√) Convert from any base to any base
+// (√) Set static default base Number.SetDefaultBaseForStringParsing(int baseValue)
+// (√) Use default base in string parsing
+// (√) Allow literal integer to be used as other bases through string parsing default
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using System.Linq;
-using static NumberOfAnyBase.Functions;
 
 namespace NumberOfAnyBase
 {
@@ -21,15 +19,23 @@ namespace NumberOfAnyBase
 
         public static void Main(string[] args)
         {
-            Number a = "3|22";
-            Number b = "3|11";
-            Console.WriteLine("-- Example --");
-            Console.WriteLine($"Base: {a.BaseValue}");
-            Console.WriteLine($"{a} + {b} = {a + b}");
-            Console.WriteLine($"{a} - {b} = {a - b}");
-            Console.WriteLine($"{a} / {b} = {a / b}");
-            Console.WriteLine($"{a} * {b} = {a * b}");
-            Console.WriteLine($"{a} % {b} = {a % b}");
+            Number a = "8|22";
+            Number b = "8|11";
+            Log("-- Example 1 --");
+            Log($"Base: {a.BaseValue}");
+            Log($"{a} + {b} = {a + b}");
+            Log($"{a} - {b} = {a - b}");
+            Log($"{a} / {b} = {a / b}");
+            Log($"{a} * {b} = {a * b}");
+            Log($"{a} % {b} = {a % b}");
+
+            Number.DefaultBaseForStringParsing = 2;
+            Number.TransformIntToDefaultBase = true;
+            Number c = 0011;
+            Number d = "1";
+            Log("\n-- Example 2 --");
+            Log($"Base: {c.BaseValue}");
+            Log($"{c} + {d} = {c + d}");
 
             // -- Tests -- //
             AdditionCommutativeTest();

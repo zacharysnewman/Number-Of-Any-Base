@@ -12,13 +12,23 @@ namespace NumberOfAnyBase
         public static Number operator /(Number a, Number b) => BinaryOperation(Divide, a, b);
         public static Number operator %(Number a, Number b) => BinaryOperation(Mod, a, b);
 
-        private static Func<Func<int, int, int>, Number, Number, Number> BinaryOperation = (operation, a, b) => DecimalToAnyBase(operation(AnyBaseToDecimal(a), AnyBaseToDecimal(b)), a.BaseValue);
+        private static Number BinaryOperation(Func<int, int, int> operation, Number a, Number b)
+        {
+            try
+            {
+                return IntToNumber(operation(NumberToInt(a), NumberToInt(b)), a.BaseValue);
+            }
+            catch (OverflowException)
+            {
+                throw new Exception($"Number overflow exception! Overflowed min or max values. Min: {Number.MinValue}, Max: {Number.MaxValue}");
+            }
+        }
 
-        private static Func<int, int, int> Add = (int a, int b) => a + b;
-        private static Func<int, int, int> Subtract = (int a, int b) => a - b;
-        private static Func<int, int, int> Multiply = (int a, int b) => a * b;
-        private static Func<int, int, int> Divide = (int a, int b) => a / b;
-        private static Func<int, int, int> Mod = (int a, int b) => a % b;
+        private static Func<int, int, int> Add = (int a, int b) => checked(a + b);
+        private static Func<int, int, int> Subtract = (int a, int b) => checked(a - b);
+        private static Func<int, int, int> Multiply = (int a, int b) => checked(a * b);
+        private static Func<int, int, int> Divide = (int a, int b) => checked(a / b);
+        private static Func<int, int, int> Mod = (int a, int b) => checked(a % b);
 
         // AbsAdd and AbsSubtract treat all Numbers as Absolute values
         // AbsSubtract expects the first value to be larger than the second value

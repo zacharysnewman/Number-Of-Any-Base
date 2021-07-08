@@ -20,7 +20,7 @@ namespace NumberOfAnyBase
             }
             catch (OverflowException)
             {
-                throw new Exception($"Number overflow exception! Overflowed min or max values. Min: {Number.MinValue}, Max: {Number.MaxValue}");
+                throw new OverflowException($"Arithmetic operation resulted in an overflow. Overflowed min or max values. Min: {Number.MinValue}, Max: {Number.MaxValue}");
             }
         }
 

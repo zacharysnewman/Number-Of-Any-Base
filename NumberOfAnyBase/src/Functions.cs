@@ -8,7 +8,7 @@ namespace NumberOfAnyBase
     {
         public static Number Abs(Number number) => new Number(number.BaseValue, isNegative: false, number.Digits);
 
-        public static string GetBaseValues(int baseNumber) => Number.ALL_NUMBER_VALUES.Substring(0, baseNumber);
+        public static string GetBaseValues(int baseNumber) => Number.OptionAllNumberValues.Substring(0, baseNumber);
         public static bool IsValidBaseValueString(string baseStr) => baseStr.All((c) => "0123456789".Contains(c));
         public static bool IsValidValueString(string numberStr, string baseValues) => numberStr.All(c => baseValues.Contains(c));
 
@@ -25,7 +25,7 @@ namespace NumberOfAnyBase
             }
             var charCol = acc.Select((x) => AllNumbersCharFromIndex(x));
             charCol = charCol.Count() > 0 ? charCol : new List<char>() { '0' };
-            return new Number($"{toBase}{Number.DELIMITER}{sign}{string.Join("", charCol)}");
+            return new Number($"{toBase}{Number.OptionDelimiter}{sign}{string.Join("", charCol)}");
         }
 
         public static int NumberToInt(Number number)
@@ -45,7 +45,7 @@ namespace NumberOfAnyBase
             return number.IsNegative ? num * -1 : num;
         }
 
-        public static Number AnyBaseToAnyBase(Number number, int toBase) => IntToNumber(NumberToInt(number), toBase);
+        public static Number NumberToNumber(Number number, int toBase) => IntToNumber(NumberToInt(number), toBase);
 
         private static int FullDivide(int a, int b, out int remainder)
         {
@@ -53,8 +53,8 @@ namespace NumberOfAnyBase
             return a / b;
         }
 
-        private static int IndexFromAllNumbersChar(char c) => Number.ALL_NUMBER_VALUES.IndexOf(c);
-        private static char AllNumbersCharFromIndex(int index) => Number.ALL_NUMBER_VALUES[index];
+        private static int IndexFromAllNumbersChar(char c) => Number.OptionAllNumberValues.IndexOf(c);
+        private static char AllNumbersCharFromIndex(int index) => Number.OptionAllNumberValues[index];
 
 
         public static List<int> ClearTrailingZeros(List<int> numberDigits)

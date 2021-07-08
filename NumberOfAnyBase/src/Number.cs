@@ -8,15 +8,6 @@ namespace NumberOfAnyBase
     // Converting between different number bases and doing math with different bases (up to Base-62 before running out of characters) - Zack Newman
     public partial struct Number : IEquatable<Number>
     {
-        public const string ALL_NUMBER_VALUES = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        public const char DELIMITER = '|';
-
-        public static int DefaultBaseForStringParsing { get; set; } = 10;
-        public static bool TransformIntToDefaultBase { get; set; } = false;
-
-        public static Number MinValue { get => int.MinValue; }
-        public static Number MaxValue { get => int.MaxValue; }
-
         public int BaseValue { get; private set; }
         public bool IsNegative { get; private set; }
         public bool IsPositive { get => !IsNegative; }
@@ -36,26 +27,47 @@ namespace NumberOfAnyBase
 
         public Number(int number)
         {
-            if (Number.TransformIntToDefaultBase)
+            if (Number.OptionUseDecimalBaseForIntLiterals)
             {
-                this = new Number(number.ToString());
+                this = new Number($"10{Number.OptionDelimiter}{number}");
             }
             else
             {
-                this = new Number($"10{Number.DELIMITER}{number}");
+                this = new Number(number.ToString());
             }
         }
 
         public override string ToString() => ToString(includeBase: false);
         public string ToString(bool includeBase)
         {
-            var prefix = includeBase ? $"{this.BaseValue}{Number.DELIMITER}" : "";
-            return $"{prefix}{(this.IsNegative ? "-" : "")}{string.Join("", this.Digits.ToArray().Reverse().Select((i) => Number.ALL_NUMBER_VALUES[i]))}";
+            var prefix = includeBase ? $"{this.BaseValue}{Number.OptionDelimiter}" : "";
+            return $"{prefix}{(this.IsNegative ? "-" : "")}{string.Join("", this.Digits.ToArray().Reverse().Select((i) => Number.OptionAllNumberValues[i]))}";
         }
+
+        public const string Default_OptionAllNumberValues = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        public const char Default_OptionDelimiter = '|';
+        public const int Default_OptionDefaultBaseForStringParsing = 10;
+        public const bool Default_OptionUseDecimalBaseForIntLiterals = true;
+
+        public static string OptionAllNumberValues { get; set; } = Number.Default_OptionAllNumberValues;
+        public static char OptionDelimiter { get; set; } = Number.Default_OptionDelimiter;
+        public static int OptionDefaultBaseForStringParsing { get; set; } = Number.Default_OptionDefaultBaseForStringParsing;
+        public static bool OptionUseDecimalBaseForIntLiterals { get; set; } = Number.Default_OptionUseDecimalBaseForIntLiterals;
+
+        public static void ResetOptionsToDefaults()
+        {
+            Number.OptionAllNumberValues = Number.Default_OptionAllNumberValues;
+            Number.OptionDelimiter = Number.Default_OptionDelimiter;
+            Number.OptionDefaultBaseForStringParsing = Number.Default_OptionDefaultBaseForStringParsing;
+            Number.OptionUseDecimalBaseForIntLiterals = Number.Default_OptionUseDecimalBaseForIntLiterals;
+        }
+
+        public static Number MinValue { get => int.MinValue; }
+        public static Number MaxValue { get => int.MaxValue; }
 
         public static Number Parse(string numberStr)
         {
-            var baseAndNumber = numberStr.Split(Number.DELIMITER);
+            var baseAndNumber = numberStr.Split(Number.OptionDelimiter);
             int baseValue = -1;
             bool isNegative = false;
             string valueStr = null;
@@ -81,20 +93,20 @@ namespace NumberOfAnyBase
             }
             else
             {
-                baseValue = Number.DefaultBaseForStringParsing;
+                baseValue = Number.OptionDefaultBaseForStringParsing;
                 valueStr = baseAndNumber[0];
                 isNegative = valueStr.Contains("-");
                 valueStr = valueStr.Replace("-", "");
 
                 if (!IsValidValueString(valueStr, GetBaseValues(baseValue)))
                 {
-                    throw new Exception($"Invalid Number. Not a valid base-{baseValue} value: '{valueStr}'. Did you mean to include an explicit base and value separated by the delimiter? '{Number.DELIMITER}'");
+                    throw new Exception($"Invalid Number. Not a valid base-{baseValue} value: '{valueStr}'. Did you mean to include an explicit base and value separated by the delimiter? '{Number.OptionDelimiter}'");
                 }
             }
 
             return new Number(baseValue, isNegative, valueStr.Select(ToDigits).Reverse().ToList());
         }
 
-        private static Func<char, int> ToDigits = (s) => Number.ALL_NUMBER_VALUES.IndexOf(s.ToString());
+        private static Func<char, int> ToDigits = (s) => Number.OptionAllNumberValues.IndexOf(s.ToString());
     }
 }

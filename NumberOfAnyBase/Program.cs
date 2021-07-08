@@ -7,6 +7,7 @@
 // (√) Set static default base Number.SetDefaultBaseForStringParsing(int baseValue)
 // (√) Use default base in string parsing
 // (√) Allow literal integer to be used as other bases through string parsing default
+// ( ) Change constants to settable options
 
 using System;
 using System.Collections.Generic;
@@ -29,13 +30,18 @@ namespace NumberOfAnyBase
             Log($"{a} * {b} = {a * b}");
             Log($"{a} % {b} = {a % b}");
 
-            Number.DefaultBaseForStringParsing = 2;
-            Number.TransformIntToDefaultBase = true;
+            Number.OptionDefaultBaseForStringParsing = 2;
+            Number.OptionUseDecimalBaseForIntLiterals = true;
             Number c = 0011;
-            Number d = "1";
+            Number.OptionDelimiter = ':';
+            Number d = "2:1";
+            Number.OptionAllNumberValues = "OI";
+            Number e = "IO";
             Log("\n-- Example 2 --");
             Log($"Base: {c.BaseValue}");
-            Log($"{c} + {d} = {c + d}");
+            Log($"{c} + {d} + {e} = {c + d + e}");
+
+            Number.ResetOptionsToDefaults();
 
             // -- Tests -- //
             AdditionCommutativeTest();

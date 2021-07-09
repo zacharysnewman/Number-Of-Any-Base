@@ -7,7 +7,8 @@
 // (√) Set static default base Number.SetDefaultBaseForStringParsing(int baseValue)
 // (√) Use default base in string parsing
 // (√) Allow literal integer to be used as other bases through string parsing default
-// ( ) Change constants to settable options
+// (√) Change constants to settable options
+// ( ) Add ToBase(int baseValue) method
 
 using System;
 using System.Collections.Generic;

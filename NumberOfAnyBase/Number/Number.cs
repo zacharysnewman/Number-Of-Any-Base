@@ -43,6 +43,7 @@ namespace NumberOfAnyBase
             var prefix = includeBase ? $"{this.BaseValue}{Number.OptionDelimiter}" : "";
             return $"{prefix}{(this.IsNegative ? "-" : "")}{string.Join("", this.Digits.ToArray().Reverse().Select((i) => Number.OptionAllNumberValues[i]))}";
         }
+        public Number ToBase(int baseValue) => Functions.NumberToNumber(this, baseValue);
 
         public const string Default_OptionAllNumberValues = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         public const char Default_OptionDelimiter = '|';

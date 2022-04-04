@@ -58,18 +58,18 @@ Console.WriteLine(a % b); // Output (in Base-2): 1
 Number.OptionDefaultBaseForStringParsing = 2;
 Number.OptionUseDecimalBaseForIntLiterals = false;
 Number n = 01101101;
-Console.WriteLine(n.BaseValue); // Output: 2
+Console.WriteLine(n.BaseValue); // Output (the Number's base): 2
 ```
 #### Octal
 ```
 Number.OptionDefaultBaseForStringParsing = 8;
 Number.OptionUseDecimalBaseForIntLiterals = false;
 Number n = 01234567;
-Console.WriteLine(n.BaseValue); // Output: 8
+Console.WriteLine(n.BaseValue); // Output (the Number's base): 8
 ```
 #### Hexadecimal
 ```
 Number.OptionDefaultBaseForStringParsing = 16;
 Number n = "0123456789ABCDE";
-Console.WriteLine(n.BaseValue); // Output: 16
+Console.WriteLine(n.BaseValue); // Output (the Number's base): 16
 ```
